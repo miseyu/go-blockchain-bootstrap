@@ -1,12 +1,7 @@
 NAME := go-blockchain-bootstrap
-SRCS := $(shell find . -type f ! -path ./lib/bindata.go -name '*.go' ! -name '*_test.go')
 CONFIGS := $(wildcard config/*)
 VERSION := v$(shell grep 'const Version ' lib/version.go | sed -E 's/.*"(.+)"$$/\1/')
 PACKAGES := $(shell go list ./...)
-
-ifeq (Windows_NT, $(OS))
-NAME := $(NAME).exe
-endif
 
 all: $(NAME)
 
@@ -33,16 +28,12 @@ clean:
 
 # Test for development
 .PHONY: test
-test: lib/bindata.go
+test:
 	go test -v $(PACKAGES)
 
 # Test for CI
 .PHONY: test-all
 test-all: deps-test-all vet lint test
-
-.PHONY: deps-test-all
-deps-test-all: dep go-bindata golint lib/bindata.go
-	dep ensure
 
 .PHONY: golint
 golint:
